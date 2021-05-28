@@ -1,47 +1,64 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 // This is just declaring the functions above the main function
-static void main_max ();
-static void main_draw ();
+static void tty_info ();
+static void center (std::string text_to_center);
 
 int main (int argc, char *argv[])
-{	
-	std::cout << "Terminal, Graphics" << std::endl;
+{
+	if (!strcmp("-v", argv[1]))
+	{
+		// For more verbose output
+		tty_info();
+		return 0;
+	}else if (!strcmp("-n", argv[1]))
+	{
+		std::cout << "Normal Mode\n\n";	
+	}
+
+	// Outputs terminal info like resolution 	
+	std::string input;	
 	
-	main_max();
+	// Getting a string to center
+	std::cout << "Enter A String: ";
+	std::cin >> input;
+        center(input);
 	return 0;
 }
 
-static void main_draw (int x, int y)
+static void center (std::string text_to_center)
 {
-	int x_half = x/2;
-	int y_half = y/2;
+	// Centers text you give it 
+	struct winsize win;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
 	
-	std::cout << "Half Rows " << x_half << std::endl;
-	std::cout << "Half Colums " << y_half << std::endl;	 	
-
-	for (int center = 0; center < x_half; center++)
+	int x = win.ws_row;
+	int y = win.ws_col;	
+	
+	// Prints a empty space until center = half of y	
+	for (int center = 0; center != y/2; center++)
 	{
-		std::cout << " ";
-	} 
-	std::cout << "Hello, World" << std::endl;
+		std::cout << " "; 
+	}
+	std::cout << text_to_center << std::endl; 
 }
 
-static void main_max ()
+static void tty_info ()
 {
 	// Gets maximum number of rows and colums of screen
 	struct winsize win;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
 	
-	std::cout << "Rows " << win.ws_row << std::endl;
-	std::cout << "Colums " << win.ws_col << std::endl;	
-	
+	std::cout << "X = " << win.ws_row   << std::endl;
+	std::cout << "Y = " << win.ws_col   << std::endl;	
+	std::cout << "X Center = " << win.ws_row/2 << std::endl;
+	std::cout << "Y Center = " << win.ws_col/2 << std::endl;	
+	std::cout << "Terminal Size = "<< win.ws_col << " x " << win.ws_row << std::endl;
+
 	int x = win.ws_row;
 	int y = win.ws_col;
-	
-	// Passing rows and colums to x and y in draw
-	main_draw(win.ws_row, win.ws_col);
 }
