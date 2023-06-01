@@ -8,16 +8,15 @@
 static void tty_info ();
 static void center (std::string text_to_center);
 
-int main (int argc, char *argv[])
-{
-	if (!strcmp("-v", argv[1]))
-	{
+int main (int argc, char *argv[]){
+	if (!strcmp(argv[1], "-v")){
 		// For more verbose output
 		tty_info();
 		return 0;
-	}else if (!strcmp("-n", argv[1]))
-	{
+	}else if (!strcmp(argv[1], "-n")){
 		std::cout << "Normal Mode\n\n";	
+	}else{
+		exit(127);
 	}
 
 	// Outputs terminal info like resolution 	
@@ -30,8 +29,7 @@ int main (int argc, char *argv[])
 	return 0;
 }
 
-static void center (std::string text_to_center)
-{
+static void center (std::string text_to_center){
 	// Centers text you give it 
 	struct winsize win;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
@@ -40,15 +38,13 @@ static void center (std::string text_to_center)
 	int y = win.ws_col;	
 	
 	// Prints a empty space until center = half of y	
-	for (int center = 0; center != y/2; center++)
-	{
+	for (int center = 0; center != y/2; center++){
 		std::cout << " "; 
 	}
 	std::cout << text_to_center << std::endl; 
 }
 
-static void tty_info ()
-{
+static void tty_info (){
 	// Gets maximum number of rows and colums of screen
 	struct winsize win;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
